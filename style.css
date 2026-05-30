@@ -1,0 +1,156 @@
+:root {
+    --bg-main: #f5f7fa;
+    --panel-bg: #ffffff;
+    --text-main: #2c3e50;
+    --text-sub: #95a5a6;
+    --accent-color: #ff6b81;
+    --border-color: #e1e8ed;
+}
+
+body {
+    margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-main); color: var(--text-main); height: 100vh;
+    overflow: hidden; user-select: none; transition: all 0.3s ease;
+    border-radius: 12px; border: 1px solid var(--border-color);
+}
+
+.drag-bar {
+    height: 35px; -webkit-app-region: drag; display: flex;
+    justify-content: flex-end; align-items: center; padding: 0 15px; position: absolute; width: 100%; box-sizing: border-box; z-index: 1;
+}
+
+.window-controls { display: flex; gap: 12px; -webkit-app-region: no-drag; z-index: 10; }
+.window-controls button {
+    background: transparent; border: none; color: var(--text-sub);
+    cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center;
+    border-radius: 5px; transition: 0.2s;
+}
+.window-controls button:hover { color: var(--text-main); background: rgba(0,0,0,0.05); }
+
+.container {
+    display: flex; height: 100vh; padding: 40px 20px 20px 20px; box-sizing: border-box; gap: 30px;
+}
+
+.timer-panel {
+    flex: 6; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    background-color: var(--panel-bg); border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+    position: relative;
+}
+
+#statusText { font-size: 1rem; letter-spacing: 6px; color: var(--accent-color); margin-bottom: 5px; font-weight: 600; }
+.time-display { font-size: 7.5rem; font-weight: 300; margin-bottom: 30px; color: var(--text-main); font-variant-numeric: tabular-nums; }
+
+.controls { display: flex; gap: 15px; z-index: 10; -webkit-app-region: no-drag;}
+.controls button {
+    background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main);
+    padding: 10px 20px; border-radius: 50px; font-size: 1rem; font-weight: 500; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+}
+.controls button:hover { background: #e8ecef; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+.audio-controls { position: absolute; bottom: 20px; left: 20px; z-index: 10; -webkit-app-region: no-drag;}
+.upload-btn {
+    font-size: 0.85rem; color: var(--text-sub); cursor: pointer; padding: 6px 12px;
+    border-radius: 8px; background: transparent; transition: 0.2s;
+}
+.upload-btn:hover { background: #e8ecef; color: var(--text-main); }
+
+/* 🌟 右侧面板与卡片（加了防撑爆锁） */
+.side-panel { flex: 4; display: flex; flex-direction: column; gap: 20px; z-index: 10; min-height: 0; }
+.card { background-color: var(--panel-bg); border-radius: 20px; padding: 25px; box-shadow: 0 8px 30px rgba(0,0,0,0.04); }
+.flex-grow { flex-grow: 1; display: flex; flex-direction: column; min-height: 0; }
+
+h3 { margin-top: 0; font-size: 1.05rem; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600; }
+.stats-time { font-size: 1.8rem; color: var(--accent-color); font-weight: 700; margin-top: 10px; }
+
+/* 🌟 添加任务区域 */
+.add-task { display: flex; gap: 10px; margin-bottom: 15px; z-index: 20; position: relative; -webkit-app-region: no-drag; }
+.add-task select { padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-main); outline: none; cursor: pointer; -webkit-app-region: no-drag; z-index: 20;}
+.add-task input { flex-grow: 1; padding: 10px 15px; box-sizing: border-box; background: var(--bg-main); border: 1px solid transparent; color: var(--text-main); border-radius: 8px; outline: none; font-size: 0.95rem; transition: 0.2s; -webkit-app-region: no-drag; z-index: 20;}
+.add-task input:focus { border-color: var(--border-color); background: #fff;}
+
+/* 🌟 四象限网格（整体滚动的核心） */
+.matrix-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    grid-auto-rows: min-content; 
+    gap: 12px; 
+    flex-grow: 1; 
+    overflow-y: auto; /* 👈 整体滚动条在这里 */
+    min-height: 0; 
+    padding-right: 5px; 
+    padding-bottom: 10px;
+}
+
+.quadrant { 
+    border-radius: 12px; padding: 10px; background: var(--bg-main); 
+    display: flex; flex-direction: column; border: 1px solid var(--border-color); 
+    height: auto; /* 👈 允许高度被内部任务自然撑开 */
+    min-height: 75px; /* 🌟 新增：固定最小高度！哪怕没有任务，也保持一个漂亮的正方形占位 */
+}
+.quadrant h4 { margin: 0 0 10px 0; font-size: 0.85rem; padding-bottom: 5px; border-bottom: 1px dashed rgba(0,0,0,0.1); }
+.q1 h4 { color: #ff4757; } .q2 h4 { color: #ffa502; } .q3 h4 { color: #1e90ff; } .q4 h4 { color: #747d8c; }
+
+/* 🌟 任务列表与单条任务 */
+.task-list { list-style: none; padding: 0; margin: 0; } /* 👈 去掉了小格子里面的滚动条 */
+.task-item { display: flex; align-items: flex-start; padding: 6px; border-radius: 6px; margin-bottom: 4px; transition: 0.2s;}
+.task-item:hover { background: rgba(0,0,0,0.03); }
+.task-item.completed span.task-text { opacity: 0.4; text-decoration: line-through; }
+.task-item input[type="checkbox"] { margin-right: 8px; margin-top: 3px; cursor: pointer; width: 14px; height: 14px; accent-color: var(--accent-color); flex-shrink: 0; -webkit-app-region: no-drag;}
+.task-text { flex-grow: 1; outline: none; font-size: 0.85rem; line-height: 1.3; word-break: break-all; -webkit-app-region: no-drag;}
+.task-actions button { background: none; border: none; cursor: pointer; color: var(--text-sub); opacity: 0; transition: 0.2s; padding: 0 5px; -webkit-app-region: no-drag;}
+.task-item:hover .task-actions button { opacity: 0.7; }
+.task-actions button:hover { opacity: 1; color: #ff4757; }
+
+/* 🌟 绝美极简滚动条（Mac风格） */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+
+/* 🌟 小窗模式（终极完美版） */
+body.mini-mode { border-radius: 40px; background-color: rgba(255, 255, 255, 0.98); box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+body.mini-mode .container { padding: 0; align-items: center; justify-content: space-between; flex-direction: row; }
+body.mini-mode .timer-panel { flex-direction: row; box-shadow: none; background: transparent; padding: 0 15px 0 25px; flex: 1; justify-content: flex-start; }
+body.mini-mode .drag-bar { height: 100%; position: absolute; z-index: 1; padding: 0 20px; }
+body.mini-mode .window-controls { position: absolute; right: 20px; z-index: 10; }
+body.mini-mode .side-panel, body.mini-mode #statusText, body.mini-mode .audio-controls { display: none; }
+body.mini-mode .time-display { font-size: 2.5rem; margin: 0 20px 0 0; font-weight: 600; letter-spacing: -1px; }
+
+/* 小窗按钮变成圆形纯图标 */
+body.mini-mode .controls { gap: 10px; margin-right: 120px; }
+body.mini-mode .window-controls { gap: 4px; }
+body.mini-mode .controls button { padding: 0; width: 40px; height: 40px; justify-content: center; border-radius: 50%; border: 1px solid var(--border-color); background: #fff;}
+body.mini-mode .controls .text { display: none; }
+body.mini-mode .controls .icon { margin: 0; width: 18px; height: 18px; }
+/* 🌟 新增：设置按钮样式 */
+.audio-controls { display: flex; align-items: center; gap: 8px; }
+.icon-btn { background: transparent; border: none; color: var(--text-sub); cursor: pointer; padding: 6px; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; justify-content: center; -webkit-app-region: no-drag;}
+.icon-btn:hover { background: #e8ecef; color: var(--text-main); }
+
+/* 🌟 新增：绝美弹窗样式 (填空版) */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 1000;
+    display: flex; justify-content: center; align-items: center; -webkit-app-region: no-drag;
+}
+.modal-content {
+    background: #fff; border-radius: 16px; padding: 30px; width: 320px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+.modal-content h3 { border-bottom: none; margin-bottom: 25px; text-align: center; font-size: 1.15rem; color: var(--text-main); font-weight: 600;}
+.setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.setting-row span { color: var(--text-main); font-size: 0.95rem; font-weight: 500; }
+.num-input {
+    padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color);
+    background: var(--bg-main); outline: none; font-size: 0.95rem; width: 80px; 
+    color: var(--text-main); text-align: center; transition: 0.2s; font-family: inherit;
+}
+.num-input:focus { border-color: var(--text-sub); background: #fff; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; }
+.modal-actions button { padding: 9px 20px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: 0.2s; border: none; font-weight: bold; }
+.btn-cancel { background: #f1f5f9; color: var(--text-sub); }
+.btn-cancel:hover { background: #e2e8f0; color: var(--text-main); }
+.btn-primary { background: var(--text-main); color: #fff; }
+.btn-primary:hover { background: #000; }
