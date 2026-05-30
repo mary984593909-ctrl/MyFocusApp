@@ -56,7 +56,19 @@ body {
 .upload-btn:hover { background: #e8ecef; color: var(--text-main); }
 
 /* 🌟 右侧面板与卡片（加了防撑爆锁） */
-.side-panel { flex: 4; display: flex; flex-direction: column; gap: 20px; z-index: 10; min-height: 0; }
+/* 🌟 右侧面板与卡片（终极防假死护盾版） */
+.side-panel { 
+    flex: 4; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+    min-height: 0; 
+    /* 👇 核心杀手锏 👇 */
+    z-index: 99; 
+    transform: translateZ(0); /* 强制开启显卡 GPU 硬件加速，这块区域绝对不会休眠假死 */
+    -webkit-app-region: no-drag; /* 彻底宣告这片区域是安全区，系统无权干涉点击事件 */
+    position: relative;
+}
 .card { background-color: var(--panel-bg); border-radius: 20px; padding: 25px; box-shadow: 0 8px 30px rgba(0,0,0,0.04); }
 .flex-grow { flex-grow: 1; display: flex; flex-direction: column; min-height: 0; }
 
@@ -70,16 +82,19 @@ h3 { margin-top: 0; font-size: 1.05rem; color: var(--text-main); border-bottom: 
 .add-task input:focus { border-color: var(--border-color); background: #fff;}
 
 /* 🌟 四象限网格（整体滚动的核心） */
+/* 🌟 四象限网格（整体滚动的核心 + 硬件加速） */
 .matrix-grid { 
     display: grid; 
     grid-template-columns: 1fr 1fr; 
     grid-auto-rows: min-content; 
     gap: 12px; 
     flex-grow: 1; 
-    overflow-y: auto; /* 👈 整体滚动条在这里 */
+    overflow-y: auto; 
     min-height: 0; 
     padding-right: 5px; 
     padding-bottom: 10px;
+    /* 👇 给滚动区域也加上硬件加速 👇 */
+    transform: translateZ(0); 
 }
 
 .quadrant { 
