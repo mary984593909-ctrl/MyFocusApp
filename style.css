@@ -123,21 +123,96 @@ h3 { margin-top: 0; font-size: 1.05rem; color: var(--text-main); border-bottom: 
 ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
 
-/* 🌟 小窗模式（终极完美版） */
-body.mini-mode { border-radius: 40px; background-color: rgba(255, 255, 255, 0.98); box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
-body.mini-mode .container { padding: 0; align-items: center; justify-content: space-between; flex-direction: row; }
-body.mini-mode .timer-panel { flex-direction: row; box-shadow: none; background: transparent; padding: 0 15px 0 25px; flex: 1; justify-content: flex-start; }
-body.mini-mode .drag-bar { height: 100%; position: absolute; z-index: 1; padding: 0 20px; }
-body.mini-mode .window-controls { position: absolute; right: 20px; z-index: 10; }
-body.mini-mode .side-panel, body.mini-mode #statusText, body.mini-mode .audio-controls { display: none; }
-body.mini-mode .time-display { font-size: 2.5rem; margin: 0 20px 0 0; font-weight: 600; letter-spacing: -1px; }
+/* 🌟 小窗模式（重构极简版：利用黑魔法消除灰框与强制完美间距） */
+body.mini-mode { 
+    background: #ffffff !important; 
+    border: 1px solid rgba(0,0,0,0.08) !important; /* 极其微弱的边框让胶囊有立体感 */
+    border-radius: 40px !important; 
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important; 
+    
+    /* 变成终极一维排列容器 */
+    display: flex !important; 
+    flex-direction: row !important; 
+    align-items: center !important; 
+    justify-content: center !important; 
+    padding: 0 15px !important; 
+    gap: 12px !important;
+    
+    -webkit-app-region: drag !important; /* 整个胶囊的空白处都可以拖拽！ */
+}
 
-/* 小窗按钮变成圆形纯图标 */
-body.mini-mode .controls { gap: 10px; margin-right: 120px; }
-body.mini-mode .window-controls { gap: 4px; }
-body.mini-mode .controls button { padding: 0; width: 40px; height: 40px; justify-content: center; border-radius: 50%; border: 1px solid var(--border-color); background: #fff;}
-body.mini-mode .controls .text { display: none; }
-body.mini-mode .controls .icon { margin: 0; width: 18px; height: 18px; }
+/* 🌟 前端黑魔法：把这三个原本导致灰框的父级容器“彻底融化”，让子元素直接受 body 排版 */
+body.mini-mode .container,
+body.mini-mode .drag-bar,
+body.mini-mode .timer-panel {
+    display: contents !important; 
+}
+
+/* 隐藏所有不需要的元素 */
+body.mini-mode .side-panel, 
+body.mini-mode #statusText, 
+body.mini-mode .audio-controls,
+body.mini-mode #skipBtn,
+body.mini-mode #resetDataBtn,
+body.mini-mode #shrinkBtn,
+body.mini-mode #closeBtn { 
+    display: none !important; 
+}
+
+/* 重新给存活的元素排序（order） */
+body.mini-mode .time-display { 
+    order: 1 !important; 
+    font-size: 2.2rem !important; 
+    margin: 0 !important; 
+    font-weight: 600 !important; 
+    letter-spacing: -1px !important; 
+    color: var(--text-main) !important;
+}
+
+body.mini-mode .controls { 
+    order: 2 !important; 
+    display: flex !important; 
+    gap: 10px !important; 
+    margin: 0 !important;
+}
+
+body.mini-mode .window-controls { 
+    order: 3 !important; 
+    display: flex !important; 
+    gap: 10px !important; 
+    position: static !important; /* 解除原本顶部的绝对定位 */
+}
+
+/* 统一按钮样式为绝美小圆圈 (稍微缩小为 36px，更精致) */
+body.mini-mode .controls button,
+body.mini-mode .window-controls button { 
+    padding: 0 !important; 
+    width: 36px !important; 
+    height: 36px !important; 
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important; 
+    border-radius: 50% !important; 
+    border: 1px solid var(--border-color) !important; 
+    background: #fff !important;
+    color: var(--text-main) !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02) !important;
+    -webkit-app-region: no-drag !important; /* 按钮区域不可拖拽，保证能精准点击 */
+}
+
+body.mini-mode .controls button:hover,
+body.mini-mode .window-controls button:hover {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+}
+
+body.mini-mode .controls .text { display: none !important; }
+body.mini-mode .controls .icon,
+body.mini-mode .window-controls button svg { 
+    margin: 0 !important; 
+    width: 16px !important; 
+    height: 16px !important; 
+}
 /* 🌟 新增：设置按钮样式 */
 .audio-controls { display: flex; align-items: center; gap: 8px; }
 .icon-btn { background: transparent; border: none; color: var(--text-sub); cursor: pointer; padding: 6px; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; justify-content: center; -webkit-app-region: no-drag;}
@@ -169,3 +244,9 @@ body.mini-mode .controls .icon { margin: 0; width: 18px; height: 18px; }
 .btn-cancel:hover { background: #e2e8f0; color: var(--text-main); }
 .btn-primary { background: var(--text-main); color: #fff; }
 .btn-primary:hover { background: #000; }
+/* 🌟 新增：日报导出与任务选择器样式 */
+.card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; }
+.card-header h3 { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.export-btn { font-size: 0.85rem; padding: 6px 10px; background: #f8fafc; border: 1px solid var(--border-color); }
+.export-btn:hover { background: var(--text-main); color: #fff; border-color: var(--text-main); }
+.task-selector { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-main); outline: none; cursor: pointer; color: var(--text-main); font-size: 0.85rem; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; -webkit-app-region: no-drag; }

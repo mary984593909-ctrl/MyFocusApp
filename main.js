@@ -28,7 +28,7 @@ ipcMain.on('window-shrink', () => {
   const { width } = screen.getPrimaryDisplay().workAreaSize;
   
   // 变成小药丸长条 (宽400, 高80，适配新的图标尺寸)
-  mainWindow.setSize(400, 80); 
+  mainWindow.setSize(280, 64); 
   
   // 飞到右上角 (屏幕宽度减去软件宽度，再留点边距)
   mainWindow.setPosition(width - 420, 30); 

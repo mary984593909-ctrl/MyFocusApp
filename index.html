@@ -52,11 +52,18 @@
             </div>
             
             <audio id="alarmSound" src=""></audio>
+            <!-- 新加的代码 -->
+<audio id="lunchAlarmSound" src=""></audio>
             <div class="audio-controls">
                 <label for="audioUpload" class="upload-btn">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 5px;"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>自定义提示音
                 </label>
                 <input type="file" id="audioUpload" accept="audio/*" style="display: none;">
+                
+                <!-- 🌟 新增：当前任务关联下拉框 -->
+                <select id="currentTaskSelect" class="task-selector">
+                    <option value="">🎯 当前未关联任务</option>
+                </select>
                 
                 <!-- 🌟 新增：设置齿轮按钮 -->
                 <button class="icon-btn" id="settingsBtn" title="设置">
@@ -73,7 +80,13 @@
             </div>
             
             <div class="card flex-grow">
-                <h3>📝 四象限待办</h3>
+                <!-- 🌟 升级：带导出按钮的标题栏 -->
+                <div class="card-header">
+                    <h3>📝 四象限待办</h3>
+                    <button id="exportBtn" class="icon-btn export-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 生成日报
+                    </button>
+                </div>
                 <div class="add-task">
                     <select id="quadrantSelect">
                         <option value="1">🔥 重要急</option>
@@ -112,13 +125,48 @@
                 <span>长时休息间隔 (个)</span>
                 <input type="number" id="longRestIntervalInput" min="1" max="10" class="num-input">
             </div>
+                        <!-- 新加的代码：午休设置项 -->
+            <div class="setting-row">
+                <span>午休自动暂停</span>
+                <input type="checkbox" id="lunchBreakToggle" style="width: 18px; height: 18px; accent-color: var(--text-main); cursor: pointer;">
+            </div>
+            <div class="setting-row">
+                <span>午休时间设定</span>
+                <input type="time" id="lunchTimeInput" class="num-input" style="width: 110px; cursor: pointer;">
+            </div>
+            <div class="setting-row">
+                <span>午休专属提示音</span>
+                <label for="lunchAudioUpload" class="upload-btn" style="border: 1px solid var(--border-color); background: #f8fafc;">
+                    点击上传
+                </label>
+                <input type="file" id="lunchAudioUpload" accept="audio/*" style="display: none;">
+            </div>
             <div class="modal-actions">
                 <button id="cancelSettings" class="btn-cancel">取消</button>
                 <button id="saveSettings" class="btn-primary">保存</button>
             </div>
         </div>
     </div>
+        <!-- 🌟 新增：日报导出弹窗 -->
+    <div id="reportModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="width: 450px; max-height: 80vh; display: flex; flex-direction: column;">
+            <h3>📊 自动生成日报</h3>
+            <textarea id="reportTextarea" style="flex-grow: 1; min-height: 300px; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); resize: none; font-family: inherit; font-size: 0.9rem; line-height: 1.5; color: var(--text-main); outline: none;"></textarea>
+            <div class="modal-actions">
+                <button id="closeReport" class="btn-cancel">关闭</button>
+                <button id="copyReport" class="btn-primary">一键复制发送给老板</button>
+            </div>
+        </div>
+    </div>
 
-    <script src="renderer.js"></script>
+    <!-- 🌟 新增：午休提示弹窗 -->
+    <div id="lunchModal" class="modal-overlay" style="display: none; z-index: 9999;">
+        <div class="modal-content" style="text-align: center; width: 280px;">
+            <h3 style="font-size: 1.4rem; margin-bottom: 10px; border-bottom: none;">☕ 午休时间到！</h3>
+            <p style="color: var(--text-sub); margin-bottom: 25px; font-size: 0.95rem;">计时已自动暂停，好好休息吧~</p>
+            <button id="closeLunchModal" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">我知道了</button>
+        </div>
+    </div>
+        <script src="renderer.js"></script>
 </body>
 </html>

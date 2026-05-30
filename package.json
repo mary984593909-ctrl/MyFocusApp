@@ -1,6 +1,6 @@
 {
   "name": "myfocusapp",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "My Focus Timer",
   "main": "main.js",
   "type": "commonjs",
