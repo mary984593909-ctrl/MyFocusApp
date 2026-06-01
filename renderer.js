@@ -74,7 +74,7 @@ const reportTextarea = document.getElementById('reportTextarea');
 const closeReport = document.getElementById('closeReport');
 const copyReport = document.getElementById('copyReport');
 
-// 🌟 修复：每日自动清空数据
+// 🌟 修复：每日自动清空数据 (狙击枪模式)
 function checkDailyReset() {
     const today = new Date().toDateString();
     const lastDate = localStorage.getItem('lastDate');
@@ -82,9 +82,12 @@ function checkDailyReset() {
     if (!lastDate) {
         localStorage.setItem('lastDate', today);
     } else if (lastDate !== today) {
-        const savedAudio = localStorage.getItem('customAudio');
-        localStorage.clear();
-        if (savedAudio) localStorage.setItem('customAudio', savedAudio);
+        // 【精准狙击】只删除每日任务和时间，绝对不碰设置、铃声和午休逻辑！
+        localStorage.removeItem('tasks');
+        localStorage.removeItem('totalFocusSeconds');
+        localStorage.removeItem('totalFocusTime'); // 兼容旧数据
+        localStorage.removeItem('lastLunchDate');
+        
         localStorage.setItem('lastDate', today);
         totalSeconds = 0;
         tasks = [];
@@ -277,9 +280,12 @@ skipBtn.addEventListener('click', () => {
 
 resetDataBtn.addEventListener('click', () => {
     if (confirm("确定要清空今天的专注时间和所有待办任务吗？")) {
-        const savedAudio = localStorage.getItem('customAudio');
-        localStorage.clear();
-        if (savedAudio) localStorage.setItem('customAudio', savedAudio);
+        // 【精准狙击】手动清空也是只清空任务和时间
+        localStorage.removeItem('tasks');
+        localStorage.removeItem('totalFocusSeconds');
+        localStorage.removeItem('totalFocusTime');
+        localStorage.removeItem('lastLunchDate');
+        
         localStorage.setItem('lastDate', new Date().toDateString());
         location.reload(); 
     }
