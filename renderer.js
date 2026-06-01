@@ -1,5 +1,8 @@
 const { ipcRenderer } = require('electron');
-
+// 🌟 新增：刷新界面按钮功能 (踹底层引擎一脚)
+document.getElementById('refreshBtn').addEventListener('click', () => {
+    location.reload(); 
+});
 // 🌟 升级：读取本地用户自定义设置
 const defaultSettings = { workTime: 25, shortRest: 5, longRest: 15, interval: 4, lunchEnabled: false, lunchTime: '12:00' };
 let userSettings = JSON.parse(localStorage.getItem('focusSettings')) || defaultSettings;

@@ -12,6 +12,7 @@ body {
     background-color: var(--bg-main); color: var(--text-main); height: 100vh;
     overflow: hidden; user-select: none; transition: all 0.3s ease;
     border-radius: 12px; border: 1px solid var(--border-color);
+      -webkit-app-region: no-drag; /* 🌟 补上这句保底防弹衣：保证全局绝对不能拖，防止幽灵遮罩蔓延 */
 }
 
 .drag-bar {
@@ -23,12 +24,14 @@ body {
 .window-controls button {
     background: transparent; border: none; color: var(--text-sub);
     cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center;
-    border-radius: 5px; transition: 0.2s;
+    border-radius: 5px; transition: 0.2s; -webkit-app-region: no-drag; /* 按钮绝不能拖 */
 }
 .window-controls button:hover { color: var(--text-main); background: rgba(0,0,0,0.05); }
 
 .container {
     display: flex; height: 100vh; padding: 40px 20px 20px 20px; box-sizing: border-box; gap: 30px;
+     -webkit-app-region: no-drag; /* 明确声明主内容区不准拖拽 */
+    transform: translateZ(0); /* 🌟 核心杀招：强制开启 GPU 硬件加速，彻底解决 Chromium 渲染假死！ */
 }
 
 .timer-panel {
@@ -155,6 +158,7 @@ body.mini-mode .audio-controls,
 body.mini-mode #skipBtn,
 body.mini-mode #resetDataBtn,
 body.mini-mode #shrinkBtn,
+body.mini-mode #refreshBtn, 
 body.mini-mode #closeBtn { 
     display: none !important; 
 }
