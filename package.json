@@ -1,6 +1,6 @@
 {
   "name": "myfocusapp",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "My Focus Timer",
   "main": "main.js",
   "type": "commonjs",
@@ -15,7 +15,7 @@
       "output": "dist-app"
     },
     "win": {
-       "icon": "icon.ico",  
+      "icon": "icon.ico",
       "target": [
         "nsis",
         "portable"
@@ -27,10 +27,13 @@
       "createDesktopShortcut": true
     }
   },
-  "author": "就是我",
+  "author": "就是我——杨童然",
   "license": "MIT",
   "devDependencies": {
     "electron": "^42.3.0",
     "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "electron-screenshots": "^0.6.1"
   }
 }

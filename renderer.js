@@ -4,7 +4,7 @@ document.getElementById('refreshBtn').addEventListener('click', () => {
     location.reload(); 
 });
 // 🌟 升级：读取本地用户自定义设置
-const defaultSettings = { workTime: 25, shortRest: 5, longRest: 15, interval: 4, lunchEnabled: false, lunchTime: '12:00' };
+const defaultSettings = { workTime: 25, shortRest: 5, longRest: 15, interval: 4, lunchEnabled: false, lunchTime: '12:00', shortcut: 'Alt+A' };
 let userSettings = JSON.parse(localStorage.getItem('focusSettings')) || defaultSettings;
 
 let WORK_TIME = userSettings.workTime * 60; 
@@ -38,6 +38,16 @@ const quadrantSelect = document.getElementById('quadrantSelect');
 const alarmSound = document.getElementById('alarmSound');
 const audioUpload = document.getElementById('audioUpload');
 const resetDataBtn = document.getElementById('resetDataBtn');
+const screenshotBtn = document.getElementById('screenshotBtn');
+
+// 🌟 初始化通知主进程注册快捷键
+ipcRenderer.send('update-shortcut', null, userSettings.shortcut || 'Alt+A');
+
+screenshotBtn.addEventListener('click', () => {
+    ipcRenderer.send('take-screenshot');
+});
+
+
 // 【新加代码】获取午休相关元素
 let lastLunchTriggerDate = localStorage.getItem('lastLunchDate') || "";
 const lunchAlarmSound = document.getElementById('lunchAlarmSound');
@@ -218,18 +228,22 @@ function pauseTimer() {
 }
 
 function handleSessionEnd() {
-    // 🌟 强行视觉打断：如果当前是小窗模式，自动放大并居中主界面！
+    // 🌟 强行视觉打断自动居中
     if (document.body.classList.contains('mini-mode')) {
         ipcRenderer.send('window-expand'); 
         document.body.classList.remove('mini-mode');
         document.getElementById('shrinkBtn').style.display = 'flex'; 
         document.getElementById('expandBtn').style.display = 'none';
+        // 🌟 魔法归位：将截屏按钮还给顶部控制区
+        document.querySelector('.window-controls').insertBefore(screenshotBtn, document.getElementById('shrinkBtn'));
     }
-    localStorage.setItem('totalFocusSeconds', totalSeconds); 
     
+    localStorage.setItem('totalFocusSeconds', totalSeconds); 
+    saveAndRenderTasks(); // 🌟 杀手锏修复 1：在切换状态的这一瞬间，立刻把刚才涨的时间焊死在硬盘里！
+
     if (isWorking) {
         isWorking = false;
-        completedPomodoros++; // 累加完成的番茄数
+        completedPomodoros++; 
         
         if (completedPomodoros % POMODORO_INTERVAL === 0) {
             timeLeft = LONG_REST_TIME;
@@ -250,10 +264,16 @@ function handleSessionEnd() {
     updateTimeDisplay();
     
     if (timerId !== null) {
-        // 🌟 核心：因为是自动无缝循环，必须刷新目标绝对时间！
         targetTime = Date.now() + (timeLeft * 1000);
         sessionStartTime = Date.now();
         sessionStartTotalSeconds = totalSeconds;
+        
+        // 🌟 杀手锏修复 2：进入新一轮自动循环时，必须重新获取当前任务此时已经存活的时间基数！否则就是从0计算
+        const selectedTaskIndex = currentTaskSelect.value;
+        if (selectedTaskIndex !== "") {
+            sessionStartTaskSeconds = tasks[selectedTaskIndex].focusSeconds || 0;
+        }
+
         startBtn.innerHTML = `${iconPause}<span class="text">暂停</span>`;
     } else {
         startBtn.innerHTML = `${iconPlay}<span class="text">开始</span>`;
@@ -371,10 +391,14 @@ document.getElementById('closeBtn').addEventListener('click', () => ipcRenderer.
 document.getElementById('shrinkBtn').addEventListener('click', () => {
     ipcRenderer.send('window-shrink'); document.body.classList.add('mini-mode');
     document.getElementById('shrinkBtn').style.display = 'none'; document.getElementById('expandBtn').style.display = 'flex';
+    // 🌟 DOM 移动魔法：小窗时，把截屏按钮强行塞到原本“延时”按钮的位置
+    document.querySelector('.controls').insertBefore(screenshotBtn, skipBtn);
 });
 document.getElementById('expandBtn').addEventListener('click', () => {
     ipcRenderer.send('window-expand'); document.body.classList.remove('mini-mode');
     document.getElementById('shrinkBtn').style.display = 'flex'; document.getElementById('expandBtn').style.display = 'none';
+    // 🌟 魔法归位：大窗时，把截屏按钮还给顶部控制栏
+    document.querySelector('.window-controls').insertBefore(screenshotBtn, document.getElementById('shrinkBtn'));
 });
 // 🌟 新增：设置弹窗控制逻辑 (填空版)
 const settingsModal = document.getElementById('settingsModal');
@@ -391,6 +415,7 @@ settingsBtn.addEventListener('click', () => {
     // 🌟 新增：读取午休设置
     document.getElementById('lunchBreakToggle').checked = userSettings.lunchEnabled || false;
     document.getElementById('lunchTimeInput').value = userSettings.lunchTime || '12:00';
+     document.getElementById('shortcutInput').value = userSettings.shortcut || 'Alt+A'; // 🌟 新增这行
     
     settingsModal.style.display = 'flex';
 });
@@ -402,6 +427,7 @@ cancelSettings.addEventListener('click', () => {
 
 // 保存设置
 saveSettings.addEventListener('click', () => {
+    const oldShortcut = userSettings.shortcut; // 🌟 记录旧快捷键用于注销
     userSettings = {
         workTime: parseInt(document.getElementById('workTimeInput').value) || 25,
         shortRest: parseInt(document.getElementById('shortRestInput').value) || 5,
@@ -409,12 +435,14 @@ saveSettings.addEventListener('click', () => {
         interval: parseInt(document.getElementById('longRestIntervalInput').value) || 4,
         // 🌟 新增：保存午休设置
         lunchEnabled: document.getElementById('lunchBreakToggle').checked,
-        lunchTime: document.getElementById('lunchTimeInput').value || '12:00'
+        lunchTime: document.getElementById('lunchTimeInput').value || '12:00',
+        shortcut: document.getElementById('shortcutInput').value || 'Alt+A' // 🌟 新增这行
     };
     
     // 保存到本地
     localStorage.setItem('focusSettings', JSON.stringify(userSettings));
-    
+    // 🌟 发送给主进程更新快捷键
+    ipcRenderer.send('update-shortcut', oldShortcut, userSettings.shortcut);
     // 更新当前内存里的变量
     WORK_TIME = userSettings.workTime * 60;
     REST_TIME = userSettings.shortRest * 60;

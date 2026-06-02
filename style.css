@@ -156,6 +156,7 @@ body.mini-mode .side-panel,
 body.mini-mode #statusText, 
 body.mini-mode .audio-controls,
 body.mini-mode #skipBtn,
+body.mini-mode #addTimeBtn, /* 🌟 隐藏小窗模式的延时五分钟按钮 */
 body.mini-mode #resetDataBtn,
 body.mini-mode #shrinkBtn,
 body.mini-mode #refreshBtn, 

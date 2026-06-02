@@ -9,10 +9,15 @@
     <!-- 顶部拖拽区 -->
     <div class="drag-bar">
         <div class="window-controls">
+                                   <!-- 🌟 新增：截屏按钮 -->
+            <button id="screenshotBtn" title="截屏 (Alt+A)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            </button>
             <!-- 🌟 新增：手动重置按钮 -->
             <button id="resetDataBtn" title="清空今日数据">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             </button>
+ 
              <!-- 🌟 新增：刷新修复按钮 -->
             <button id="refreshBtn" title="刷新界面 (修复卡顿)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
@@ -128,6 +133,11 @@
             <div class="setting-row">
                 <span>长时休息间隔 (个)</span>
                 <input type="number" id="longRestIntervalInput" min="1" max="10" class="num-input">
+            </div>
+                        <!-- 新加的代码：快捷键设置 -->
+            <div class="setting-row">
+                <span>截屏快捷键</span>
+                <input type="text" id="shortcutInput" class="num-input" style="width: 110px; text-align: center;" placeholder="Alt+A">
             </div>
                         <!-- 新加的代码：午休设置项 -->
             <div class="setting-row">
