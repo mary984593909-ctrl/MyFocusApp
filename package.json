@@ -1,6 +1,6 @@
 {
   "name": "myfocusapp",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "My Focus Timer",
   "main": "main.js",
   "type": "commonjs",
@@ -11,9 +11,18 @@
   "build": {
     "appId": "com.myfocus.app",
     "productName": "工作休息钟",
+    "asar": true,
     "directories": {
       "output": "dist-app"
     },
+    "files": [
+      "index.html",
+      "main.js",
+      "renderer.js",
+      "style.css",
+      "icon.ico",
+      "node_modules/**/*"
+    ],
     "win": {
       "icon": "icon.ico",
       "target": [
